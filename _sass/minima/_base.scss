@@ -177,6 +177,7 @@ pre {
 
   > code {
     border: 0;
+    white-space: pre-wrap;
     padding-right: 0;
     padding-left: 0;
   }
@@ -191,8 +192,6 @@ pre {
     background: $code-background-color;
   }
 }
-
-
 
 /**
  * Wrapper
