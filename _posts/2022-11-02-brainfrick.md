@@ -3,7 +3,7 @@ layout: post
 title: "Deep Dive: brainfrick-rs"
 ---
 
-[Brainfrick-rs](https://github.com/rafibayer/brainfrick-rs) is an optimizing compiler/interpreter written in Rust for [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck), an [esoteric programming language](https://esolangs.org/), known for its extreme simplicity.
+[**Brainfrick-rs**](https://github.com/rafibayer/brainfrick-rs) is an optimizing compiler/interpreter written in Rust for [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck), an [esoteric programming language](https://esolangs.org/), known for its extreme simplicity.
 
 # Brainfuck Basics
 For those who have never seen it before, here is a sample brainfuck program. 
