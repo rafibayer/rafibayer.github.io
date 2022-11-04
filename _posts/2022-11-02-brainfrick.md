@@ -560,7 +560,7 @@ Let's try timing the runtime with and without optimizations to see the impact. U
 
 Unoptimized:
 ```
-$ cargo run --release -- samples/mandelbrot.bf
+$ time cargo run --release -- samples/mandelbrot.bf
 ...
 real    0m18.641s
 user    0m0.000s
@@ -569,7 +569,7 @@ sys     0m0.015s
 
 Fully Optimized:
 ```
-$ cargo run --release -- samples/mandelbrot.bf
+$ time cargo run --release -- samples/mandelbrot.bf
 ...
 real    0m5.276s
 user    0m0.000s
