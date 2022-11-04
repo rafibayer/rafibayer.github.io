@@ -144,7 +144,7 @@ pub fn compile(src: &str) -> Program {
         .filter_map(Result::ok) // keep only valid instructions
         .collect::<Vec<_>>();
 
-    // match opening and closing Loop instructions ('[' and ']')
+    // match opening and closing Loop instructions ('[' and ']').
     // we could use a map here as well, but we opt for a vector for increased performance at the cost of using a flat `usize` memory per instruction
     let mut loop_map = vec![0; instructions.len()];
     let mut stack = Vec::new();
@@ -347,24 +347,29 @@ fn contraction_optimizer(mut instructions: Vec<Instruction>) -> Vec<Instruction>
     let mut input = instructions.drain(..).peekable();
     let mut next: Option<Instruction> = input.next();
 
+    // loop over our input instructions
     while let Some(cur) = next {
         match cur {
             // ex: ">><>>" -> Shift(3)
             Instruction::Shift(mut count) => {
+                // keep contracting while the next instruction is a Shift
                 while let Some(Instruction::Shift(more)) = input.peek() {
                     count += *more;
                     input.next();
                 }
 
+                // output our final contracted Shift
                 output.push(Instruction::Shift(count));
             }
             // ex: "+--+-" -> Alt(-1)
             Instruction::Alt(mut count) => {
+                // keep contracting while the next instruction is an Alt
                 while let Some(Instruction::Alt(more)) = input.peek() {
                     count += *more;
                     input.next();
                 }
 
+                // output our final contracted Alt
                 output.push(Instruction::Alt(count));
             }
             other => output.push(other),
@@ -484,6 +489,7 @@ fn clear_loop_optimizer(instructions: Vec<Instruction>) -> Vec<Instruction> {
         if output.len() >= 3 {
             // ex: "[-]" -> Clear
             if let [Loop, Alt(-1), End] = output[output.len() - 3..] {
+                // if we find the sequence, replace it with 'Clear'
                 remove_n(&mut output, 3);
                 output.push(Clear);
             };
@@ -504,6 +510,8 @@ Clear => {
     self.data[self.ptr] = 0;
 }
 ```
+
+Since each cell is represented by a single byte (`u8`), this optimization could save us up to 255 decrements each time we use it.
 
 Let's run our benchmark again and see what's changed
 
