@@ -107,24 +107,33 @@ pub enum Instruction {
     // > Shhh... We'll get there!
 ```
 
-We also implement `TryFrom<char>` on our `Instruction` type so we can convert from our program source. 
+We also implement `TryFrom<char>` on our `Instruction` type so we can easily parse from our program source. 
+
 ##### `src/instruction.rs`
 ```rust
 impl TryFrom<char> for Instruction {
     type Error = ();
 
+    /// Convert value into an `Instruction`.
     /// Returns `Err(())` if value is not a valid `Instruction`.
     fn try_from(value: char) -> Result<Self, Self::Error> {
         use Instruction::*;
 
-        // Convert each source token into it's corresponding instruction
+        // Convert each source token into it's corresponding
+        // Instruction, or Err(()) if it is not a valid brainfuck instruction
         Ok(match value {
             '>' => Shift(1),
             '<' => Shift(-1),
             '+' => Alt(1),
             '-' => Alt(-1),
             '.' => Out,
-            // you get the point
+            ',' => In,
+            '[' => Loop,
+            ']' => End,
+            _ => return Err(()),
+        })
+    }
+}
 ```
 
 We return an `Err` for any invalid characters, we then ignore then when parsing the program.
@@ -256,19 +265,21 @@ impl VM {
             let instruction = &self.program.instructions[instruction_ptr];
 
             match instruction {
-                Shift(count) => self.ptr = (self.ptr as isize + count) as usize,
+                Shift(count) => {
+                    self.ptr = (self.ptr as isize + count) as usize;
+                },
                 Alt(amount) => {
                     self.data[self.ptr] = match *amount >= 0 {
                         true => self.data[self.ptr].wrapping_add(*amount as u8),
                         false => self.data[self.ptr].wrapping_sub(-amount as u8),
                     };
                 }
-                Out => print!("{}", self.data[self.ptr] as char),
+                Out => {
+                    print!("{}", self.data[self.ptr] as char);
+                },
                 In => {
-                    // read a byte!
                     self.data[self.ptr] = std::io::stdin()
-                        .bytes()
-                        .next().unwrap().unwrap()
+                        .bytes().next().unwrap().unwrap();
                 },
                 Loop => {
                     if self.data[self.ptr] == 0u8 {
