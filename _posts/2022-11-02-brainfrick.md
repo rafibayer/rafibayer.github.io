@@ -190,6 +190,12 @@ Alt(1),
 Alt(1),
 Loop,
     Shift(1),
+    Alt(1),
+    Alt(1),
+    Alt(1),
+    Alt(1),
+    Loop,
+        Shift(1),
 ...
 ```
 
@@ -307,7 +313,7 @@ It's a lot to take in at once but it's very simple.
 
 Our loop will run until our `instruction_ptr` reaches the end of our program. In each iteration, we grab the `Instruction` at `instruction_ptr`, and use `match` to find the implementation. Each implementation is similar to the C version, but contains some extra logic to handle wrapping semantics and the use of types with different [Signednesss](https://en.wikipedia.org/wiki/Signedness).
 
-If you have a keen eye you'll notice some weird choices right away. For example, why bother making `>` and `<` into the same `Shift(isize)` instruction if we have to branch to handle it anyway... and why include an `isize` field at all if each `>` and `<` will only move us 1 cell?
+If you have a keen eye you'll notice some weird choices right away. For example, why bother making `>` and `<` into the same `Shift(isize)` instruction if we have to branch to handle it anyway... and why include an `isize` field at all if each `>` and `<` will only move us 1 cell? Wouldn't it be simpler to have separate instructions and only increment or decrement by 1 without handling mixed sized and un-sized types?
 
 This brings us to our next (and in my opinion, most interesting) chapter.
 
@@ -383,7 +389,8 @@ fn contraction_optimizer(mut instructions: Vec<Instruction>) -> Vec<Instruction>
                 // output our final contracted Alt
                 output.push(Instruction::Alt(count));
             }
-            other => output.push(other),
+            // other instructions are kept unchanged
+            other => output.push(other), 
         }
 
         next = input.next();
