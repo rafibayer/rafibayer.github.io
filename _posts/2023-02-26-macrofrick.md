@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Macrofrick: Metaprogramming for fun and for SPEED"
+hidden: true
 ---
 
 [Macrofrick](https://github.com/rafibayer/macrofrick) is a Brainfuck compiler that leverages Rust's declarative macros and efficient compiler to produce blazingly fast binaries with minimal effort.
@@ -422,3 +423,4 @@ fn main() {
     frick!([ignore me please ]++++++++[>++++[>++>+++>middle of the loop+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.);
 } 
 ```
+
