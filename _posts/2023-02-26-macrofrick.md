@@ -124,7 +124,7 @@ fn main() {
 }
 ```
 
-Notice, our macro rule specified `expr` as the AST node to match, this means we could pass any valid Rust expression to our macro, and the rule would match. Rust macros can go beyond matching a simple expression, there are a whole set of [fragment-specifiers](https://doc.rust-lang.org/reference/macros-by-example.html#metavariables) we can use to match Rust code. Macrofrick, our new brainfuck compiler, with leverage the `tt` fragment to match Rust code at the token level.
+Notice, our macro rule specified `expr` as the AST node to match, this means we could pass any valid Rust expression to our macro, and the rule would match. Rust macros can go beyond matching a simple expression, there are a whole set of [fragment-specifiers](https://doc.rust-lang.org/reference/macros-by-example.html#metavariables) we can use to match Rust code. Macrofrick, our new brainfuck compiler, will leverage the `tt` fragment to match Rust code at the token level.
 
 The last bit of Rust Macro basics we need to cover before moving onto macrofrick is repetition. One of the first justifications we gave for using macros over functions in Rust is the ability to use macros as variadic functions. A naive approach would be to just add rules to our macro to support more and more arguments, for example, our `add` macro could become 
 
@@ -140,12 +140,6 @@ macro_rules! add {
         $e1 + $e2 + $e3 + $e4
     },
     // and on and on and on...
-}
-
-fn main() {
-    let x = 5;
-    let y = 10;
-    let result = add!(x, y);
 }
 ```
 
@@ -235,7 +229,7 @@ Like brainfrick-rs, we use a default of 30,000 cells of type u8, a single byte.
 
 ### Aside: Macro Hygiene
 
-A quick note about [macro hygiene](https://en.wikipedia.org/wiki/Hygienic_macro). Because macros can expand to arbitrary code, it's theoretically for the developer of a macro to accidentally shadow or capture a variable used elsewhere in the program. 
+A quick note about [macro hygiene](https://en.wikipedia.org/wiki/Hygienic_macro). Because macros can expand to arbitrary code, it's theoretically possible for the developer of a macro to accidentally shadow or capture a variable used elsewhere in the program. 
 
 Imagine we wrote a macro like this:
 ```rust
@@ -250,7 +244,7 @@ macro_rules! count_to_5 {
 }
 ```
 
-Here we declare and modify a variable, `i` in our macro, but what if `i` was already defined in the surrounding scope. Depending on `i`'s type, we could cause a variety of problems. If `i` was perhaps a string, our problem would likely just fail to compile, since after the macro was executed, `i` would now refer to a numeric type, which probably would break following code referencing `i`. Even worse, if `i` was already a number, we now just unpredictably changed the value of `i` which would be incredibly hard to debug because it depends on how the macro developer decided to name their variables. 
+Here we declare and modify a variable, `i` in our macro, but what if `i` was already defined in the surrounding scope. Depending on `i`'s type, we could cause a variety of problems. If `i` was perhaps a string, our program would likely just fail to compile, since after the macro was executed, `i` would now refer to a numeric type, where we were expecting a string. Even worse, if `i` was already a number, we now just unpredictably changed the value of `i` which would be incredibly hard to debug because it depends on how the macro developer decided to name their variables. 
 
 Lets try running some code and see if Rust suffers from this problem
 
@@ -288,7 +282,7 @@ Each rule for `instr!` will look something like this
 }
 ```
 
-The `ident` fragment specifier means the rule wants to match an identifier, like a variable name. We can write our `instr!` macro, and call it from `frick!`.
+The `ident` fragment specifier means the rule wants to match an identifier, like a variable name. We can write our `instr!` macro, and call it from `frick!` with `mem` and `ptr` used to match the first 2 metavariables.
 
 ##### `main.rs`
 ```rust
@@ -462,7 +456,7 @@ fn main() {
             mem[ptr] = mem[ptr].wrapping_add(1);
             while mem[ptr] > 0 {
                 ptr += 1;
-    // .... and on and on ... 
+    // ... and on and on ... 
 ```
 
 This means that by compiling in release mode, we'll get the benefits from any optimizations Rust performs itself.
@@ -492,7 +486,7 @@ But when we look at the corresponding asm in Godbolt for these instructions:
 mov     byte ptr [rsp], 7
 ```
 
-We see that we stored 7 in the cell with a single instruction. In brainfrick-rs, we performed such optimizations by hand, but here we get optimization for free alongside any others that the compiler pipeline performs on any Rust code.
+We see that we stored 7 in the cell with a single instruction. In brainfrick-rs, we performed such optimizations by hand, but here we get optimization for free alongside any others that the compiler pipeline performs on Rust code.
 
 So without further ado, let's compile the entire Mandelbrot program in release mode and see how we do:
 
@@ -501,11 +495,12 @@ So without further ado, let's compile the entire Mandelbrot program in release m
 // macros defined above!
 
 fn main() {
-    frick!(+++++++++++++[->++>>>+++++>++>+<<< /* ... snip ... */);
+    frick!(+++++++++++++[->++>>>+++++>++>+<<< /* ... snip ... */ );
 } 
 ```
 
 `$ cargo build --release`
+
 `$ time cargo run --release`
 
 ```
@@ -519,7 +514,7 @@ sys     0m0.000s
 ## But wait, there's more!
 Not bad, but I know what you must be thinking, I promised you we'd get to under a second, and don't you worry, because that's where we're headed.
 
-While Rust is heralded for it's performance and safety, we can squeeze even more juice out of our compiler by forgoing the safety component. Like other memory-safe languages, Rust provides automatic bounds checking on arrays. Unlike C, if you try to reach beyond the bounds of an array in Rust, you'll get a runtime panic, because the Rust compiler inserts instructions to ensure you're always indexing within the bounds of your array. Modern compilers and CPUs can make the impact of these checks nearly negligible, but if speed is the name of the game, we can forget them all together. 
+While Rust is heralded for it's performance and safety, we can squeeze even more juice out of our compiler by forgoing the safety aspect. Like other memory-safe languages, Rust provides automatic bounds checking on arrays. Unlike C, if you try to reach beyond the bounds of an array in Rust, you'll get a runtime panic, because the Rust compiler inserts instructions to ensure you're always indexing within the bounds of your array. Modern compilers and CPUs can make the impact of these checks nearly negligible, but if speed is the name of the game, we can forgo them all together. Maybe don't write any banking software with my brainfuck compiler.
 
 We'll add 2 more macros just to make our code prettier, they make use of the `unsafe` array methods `get_unchecked` and `get_unchecked_mut`.
 
@@ -542,6 +537,13 @@ Now we amend our rules to make use of these anywhere we index into `mem`.
 
 ##### `branch:unsafe main.rs`
 ```rust
+// ... snip ...
+unsafe {
+    $(
+        instr!(mem ptr $code);
+    )*
+}
+
 // ... snip ...
 ($mem:ident $ptr:ident +) => {
     // +
@@ -573,6 +575,7 @@ Now we amend our rules to make use of these anywhere we index into `mem`.
 ```
 
 `$ cargo build --release`
+
 `$ time cargo run --release`
 
 ```
