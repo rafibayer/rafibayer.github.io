@@ -424,3 +424,163 @@ fn main() {
 } 
 ```
 
+`$ cargo run`
+```
+Hello World!
+```
+
+Nice 😎
+
+
+## Mandelbrot
+At first glance, it might seem like this implementation should be slower than brainfrick-rs, after all, we've only implemented one of the many optimizations that our first compiler had. On the surface, this would be right, however, we now have a different optimizer coming into play: 
+
+**The Rust Compiler Itself.**
+
+Since our macro expands into valid Rust code, we're just compiling and running Rust in the end, here is a truncated expansion of our "Hello World!".
+
+##### `expanded main.rs`
+```rust
+
+fn main() {
+        let mut mem: [TCell; 30_000] = [0; 30_000];
+        let mut ptr = 0;
+        while mem[ptr] > 0 { }; // our first comment, empty loop
+        mem[ptr] = mem[ptr].wrapping_add(1);
+        mem[ptr] = mem[ptr].wrapping_add(1);
+        mem[ptr] = mem[ptr].wrapping_add(1);
+        mem[ptr] = mem[ptr].wrapping_add(1);
+        mem[ptr] = mem[ptr].wrapping_add(1);
+        mem[ptr] = mem[ptr].wrapping_add(1);
+        mem[ptr] = mem[ptr].wrapping_add(1);
+        mem[ptr] = mem[ptr].wrapping_add(1);
+        while mem[ptr] > 0 {
+            ptr += 1;
+            mem[ptr] = mem[ptr].wrapping_add(1);
+            mem[ptr] = mem[ptr].wrapping_add(1);
+            mem[ptr] = mem[ptr].wrapping_add(1);
+            mem[ptr] = mem[ptr].wrapping_add(1);
+            while mem[ptr] > 0 {
+                ptr += 1;
+    // .... and on and on ... 
+```
+
+This means that by compiling in release mode, we'll get the benefits from any optimizations Rust performs itself.
+
+One great way this comes into play is compile-time evaluation of constant expressions. The Rust compiler is smart enough to combine repetitive code into single instructions. For example, this code increments the current cell 7 times, 7 brainfuck instructions, 7 lines of Rust.
+
+```rust
+frick!(+++++++);
+```
+
+```rust
+// expanded
+let mut mem: [TCell; 30_000] = [0; 30_000];
+let mut ptr = 0;
+mem[ptr] = mem[ptr].wrapping_add(1);
+mem[ptr] = mem[ptr].wrapping_add(1);
+mem[ptr] = mem[ptr].wrapping_add(1);
+mem[ptr] = mem[ptr].wrapping_add(1);
+mem[ptr] = mem[ptr].wrapping_add(1);
+mem[ptr] = mem[ptr].wrapping_add(1);
+mem[ptr] = mem[ptr].wrapping_add(1);
+```
+
+But when we look at the corresponding asm in Godbolt for these instructions:
+
+```nasm
+mov     byte ptr [rsp], 7
+```
+
+We see that we stored 7 in the cell with a single instruction. In brainfrick-rs, we performed such optimizations by hand, but here we get optimization for free alongside any others that the compiler pipeline performs on any Rust code.
+
+So without further ado, let's compile the entire Mandelbrot program in release mode and see how we do:
+
+##### `main.rs`
+```rust
+// macros defined above!
+
+fn main() {
+    frick!(+++++++++++++[->++>>>+++++>++>+<<< /* ... snip ... */);
+} 
+```
+
+`$ cargo build --release`
+`$ time cargo run --release`
+
+```
+real    0m1.166s
+user    0m0.000s
+sys     0m0.000s
+```
+
+🚀
+
+## But wait, there's more!
+Not bad, but I know what you must be thinking, I promised you we'd get to under a second, and don't you worry, because that's where we're headed.
+
+While Rust is heralded for it's performance and safety, we can squeeze even more juice out of our compiler by forgoing the safety component. Like other memory-safe languages, Rust provides automatic bounds checking on arrays. Unlike C, if you try to reach beyond the bounds of an array in Rust, you'll get a runtime panic, because the Rust compiler inserts instructions to ensure you're always indexing within the bounds of your array. Modern compilers and CPUs can make the impact of these checks nearly negligible, but if speed is the name of the game, we can forget them all together. 
+
+We'll add 2 more macros just to make our code prettier, they make use of the `unsafe` array methods `get_unchecked` and `get_unchecked_mut`.
+
+##### `branch:unsafe main.rs`
+```rust
+macro_rules! get {
+    ($mem:ident $ident:ident) => {
+        $mem.get_unchecked($ident)
+    };
+}
+
+macro_rules! set {
+    ($mem:ident $ident:ident $value:expr) => {
+        *$mem.get_unchecked_mut($ident) = $value
+    };
+}
+```
+
+Now we amend our rules to make use of these anywhere we index into `mem`.
+
+##### `branch:unsafe main.rs`
+```rust
+// ... snip ...
+($mem:ident $ptr:ident +) => {
+    // +
+    set!($mem $ptr get!($mem $ptr).wrapping_add(1))
+};
+($mem:ident $ptr:ident -) => {
+    // -
+    set!($mem $ptr get!($mem $ptr).wrapping_sub(1))
+};
+($mem:ident $ptr:ident .) => {
+    // .
+    print!("{}", *get!($mem $ptr) as char);
+};
+($mem:ident $ptr:ident ,) => {
+    // ,
+    let c = std::io::stdin()
+    .bytes().next().unwrap().unwrap();
+    set!($mem $ptr c);
+};
+($mem:ident $ptr:ident [ $( $body:tt )* ]) => {
+    // [ CODE ]
+    while *get!($mem $ptr) > 0 {
+        $(
+            instr!($mem $ptr $body);
+        )*
+    }
+};
+// ... snip ...
+```
+
+`$ cargo build --release`
+`$ time cargo run --release`
+
+```
+real    0m0.818s
+user    0m0.000s
+sys     0m0.000s
+```
+
+**🚀⚡⏩** 
+
+...and whatever other emojis you associate with speed
