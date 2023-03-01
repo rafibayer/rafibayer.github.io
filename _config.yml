@@ -32,7 +32,12 @@ header_pages:
 theme: minima
 
 plugins:
- - jekyll-seo-tag
+  # - jekyll-redirect-from
+  - jekyll-seo-tag
+
+whitelist:
+  # - jekyll-redirect-from
+  - jekyll-seo-tag
 
 kramdown:
   # section headers get corresponding ID's, allows internal links
