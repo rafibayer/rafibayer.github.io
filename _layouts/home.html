@@ -31,11 +31,15 @@ layout: default
               <a class="post-link" href="{{ post.url | relative_url }}">
                 {{ post.title | escape }}
               </a>
+              {%- if post.tags -%}
+                Topics: <strong>{{ post.tags | join: ', ' }}</strong>
+              {%- endif -%}
             </h3>
             {%- if site.show_excerpts -%}
               {{ post.excerpt }}
             {%- endif -%}
           </li>
+          <br>
         {%- endif -%}
       {%- endfor -%}
     </ul>

@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "Macrofrick: Metaprogramming for fun and for SPEED"
-hidden: true
+title: "Deep Dive: Macrofrick - Metaprogramming for Fun and for Speed"
+tags: Rust Metaprogramming Brainfuck Compilers
 ---
 
 [Macrofrick](https://github.com/rafibayer/macrofrick) is a Brainfuck compiler that leverages Rust's declarative macros and efficient compiler to produce blazingly fast binaries with minimal effort.
@@ -193,7 +193,7 @@ fn main() {
 }
 ```
 
-If you want to learn more about Rust macros, [Macrokata](https://github.com/tfpk/macrokata) is a fantastic set of tutorials and exercises. I was able to write Macrofrick before I even finished them all. 
+If you want to learn more about Rust macros, [Macrokata](https://github.com/tfpk/macrokata) is a fantastic set of tutorials and exercises. I was able to write macrofrick before I even finished them all. 
 
 ## Brainfuck: Back to Basics
 In our original [Brainfuck]({% post_url 2022-11-02-brainfrick %}#brainfuck-basics) article, we discussed the equivalencies between brainfuck instructions, and lines of C code. The table in that article gives a possible C implementation for all 8 of brainfucks instructions.
