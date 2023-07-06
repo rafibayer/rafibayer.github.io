@@ -77,9 +77,9 @@ var s *string
 fmt.Println(*s)
 ```
 
-This works because Go has a garbage collector, there is still a reference to the string despite the original variable going out of scope. In a language like C  without a garbage collector, this can create a [dangling pointer](https://en.wikipedia.org/wiki/Dangling_pointer) which can segfault your program at best or create a security vulnerability at worst.
+This works because Go has a garbage collector, there is still a reference to the string despite the original variable going out of scope. In a language like C without a garbage collector, this can create a [dangling pointer](https://en.wikipedia.org/wiki/Dangling_pointer) which can segfault your program at best or create a security vulnerability at worst.
 
-But it we can't share our references to other scopes, how can we share data in Rust? Especially when we start working with multiple threads, we certainly lose any ability to guarantee our reference doesn't outlive its owner.
+But if we can't share our references to other scopes, how can we share data in Rust? Especially when we start working with multiple threads, we certainly lose any ability to guarantee our reference doesn't outlive its owner.
 
 
 ## The Mutex
@@ -119,7 +119,7 @@ shared_value.do_something();
 // no need to unlock, when shared_value leaves scope, the lock is released
 ```
 
-So far we've been a bit hand-wavy with the setup, so let's set up a full demo, we'll use the classic concurrency demo of incrementing a shared counter.
+So far we've been a bit hand-wavy with the details, we'll use the classic concurrency demo of incrementing a shared counter.
 
 ```rust
 use std::{
@@ -163,7 +163,7 @@ fn main() {
 }
 ```
 
-Our output looks about as expected, the threads obtain the lock in pseudo-random order and perform their work before releasing. Our final counter value is as expected, no updates were lost.
+Our output looks about as expected, the threads obtain the lock in pseudo-random order and perform their work before releasing. Our final counter value is the sum of all increments, no updates were lost.
 
 ```
 0 grabbed the lock
@@ -189,10 +189,10 @@ Our output looks about as expected, the threads obtain the lock in pseudo-random
 after: 10000
 ```
 
-Ultimately, this all probably looks familiar if you've written any concurrency-related code in a language like Java or Go. That's a good thing! Rust can already be difficult to learn, but here you get to apply a fairly ubiquitous pattern of concurrency and locking, just without all the risks you normally undertake when working with multiple threads.
+This all looks familiar if you've written any concurrency-related code in a language like Java or Go. That's a good thing! Rust can already be difficult to learn, but here you get to apply a fairly ubiquitous pattern of concurrency and locking, just without all the risks you normally undertake when working with multiple threads.
 
 ## Composability
-The last aspect of Rust mutexes I want to touch on is composability. Because a Rust mutex give you a reference to the owned data, I find it easier to compose functions that use it. Let's write some pseudo-code demonstrating typical mutex usage in another language:
+The last aspect of Rust mutexes I want to touch on is composability. Because a Rust mutex gives you a reference to the owned data, I find it easier to compose functions that use it. Let's write some pseudo-code demonstrating typical mutex usage in another language:
 
 ```
 struct Balances {
@@ -219,7 +219,7 @@ func Withdraw(account, amt) error {
 }
 ```
 
-We have a structure that contains both the mutex as well as the data it protects. We have some functions that acquire the lock, and perform some work on the data. The problem arises when we want to start composing these functions together, say we want to implement a transfer function, we'll write out some psuedo-code with potential implementations:
+We have a structure that contains both the mutex as well as the data it protects. We have some functions that acquire the lock, and perform some work on the data. The problem arises when we want to start composing these functions together, say we want to implement a transfer function, we'll write some pseudo-code with potential implementations:
 
 ```
 func Transfer(from, to, amt) {
@@ -228,7 +228,7 @@ func Transfer(from, to, amt) {
 }
 ```
 
-This is no good! `Withdraw` and `Deposit` acquire the lock independently, meaning we have to acquire it twice to process and `Transfer`, and another concurrent caller could acquire the lock between our 2 functions moving our data into an invalid state after we've already performed half the transaction. Acquiring the lock in `Transfer` instead would cause a deadlock, since we also need to acquire the lock for `Withdraw` and `Deposit`. 
+This is no good! `Withdraw` and `Deposit` acquire the lock independently, meaning we have to acquire it twice to process and `Transfer`, another concurrent caller could acquire the lock between our 2 functions moving our data into an invalid state after we've already performed half the transaction. Acquiring the lock in `Transfer` instead would cause a deadlock, since we also need to acquire the lock for `Withdraw` and `Deposit`. 
 
 We could refactor our code to take the lock outside of all of these functions, and assume we're already holding it during the actual mutation, but doing so in a language like go makes it easy for us to introduce some of the bugs we talked about earlier.
 
@@ -244,10 +244,9 @@ func Transfer(from, to, amt) {
 }
 ```
 
-Now we've introduced a lot of complexity over whos job it is to acquire and release the lock, and where it's safe to assume the lock is held. Enforcing that usages of these functions actually acquire the lock to protect their data is entirely the responsibility of the programmer, there isn't any real relationship between the mutex and data other than the fact that they are in the same struct. Even with proper acquisition, it's easy to make mistakes like passing the map to another thread that might outlive the scope in which we have the lock. 
+Now we've introduced a lot of complexity over whose job it is to acquire and release the lock, and where it's safe to assume the lock is held. Enforcing that usages of these functions actually acquire the lock to protect their data is entirely the responsibility of the programmer, there isn't any real relationship between the mutex and data other than the fact that they are in the same struct. Even with proper acquisition, it's easy to make mistakes like passing the map to another thread that might outlive the scope in which we have the lock. 
 
 Rust protects us from all these mistakes, we can apply the same pattern, locking our Mutex outside of our business logic, and assuming we have it inside. The difference is that Rust will never allow us to access the data without first acquiring the lock, and since the lock is held for the lifetime of the reference, the data can never escape the scope of the lock.
-
 
 ```rust
 struct Balances {
@@ -278,7 +277,7 @@ impl Balances {
     }
 
     fn withdraw_internal(accounts: &mut HashMap<String, i32>, account: &str, amt: i32) {
-        // same assumtpion as deposit_internal
+        // same assumption as deposit_internal
         *accounts.get_mut(account).unwrap() -= amt;
     }
 }
