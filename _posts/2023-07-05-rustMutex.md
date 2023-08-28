@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Byte by Byte: Rust has better Mutexes"
+title: "Byte by Byte: Mutexes in Rust"
 tags: Rust Programming-Languages Concurrency
 ---
 
