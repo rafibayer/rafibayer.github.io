@@ -32,7 +32,7 @@ sequenceDiagram
 
 We spent a whole lot of time analyzing common patterns of brainfuck code to find opportunities to optimize. By applying all these neat little tricks, we were able to drive down the runtime of our sample programs more and more.
 
-Just for reference, our most intensive brainfuck program was `mandelbrot.bf`, a nearly **12,000** instruction long program that produced a mandelbrot fractal using ASCII characters. By applying our optimizer pipeline to our brainfuck instructions, our compiler was able to speed up the runtime of the program from about **13.2** to **4.3** seconds on my machine with the most recent version. All told, brainfrick-rs is a fairly modest ~750 lines of code. While we could certainly keep squeezing performance out of it with new clever optimizers and careful profiling, we are already reaching the limits of what I could squeeze out of our VM implementation. 
+Just for reference, our most intensive brainfuck program was `mandelbrot.bf`, a nearly **12,000** instruction long program that produced a mandelbrot fractal using ASCII characters. By applying our optimizer pipeline to our brainfuck instructions, our compiler was able to speed up the runtime of the program from about **13.2** to **4.3** seconds on my machine with the most recent version. All told, brainfrick-rs is a fairly modest ~750 lines of code. While we could certainly keep improving performance with new clever optimizers and careful profiling, we are already reaching the limits of what could be squeezed out of our VM implementation. 
 
 Instead, we will take a different approach: leveraging one of the most powerful compilers in the world to execute `mandelbrot.bf` in **less than 1 second** with about 100 lines of code.
 
@@ -461,7 +461,7 @@ fn main() {
 
 This means that by compiling in release mode, we'll get the benefits from any optimizations Rust performs itself.
 
-One great way this comes into play is compile-time evaluation of constant expressions. The Rust compiler is smart enough to combine repetitive code into single instructions. For example, this code increments the current cell 7 times, 7 brainfuck instructions, 7 lines of Rust.
+One great way this benefits us is compile-time evaluation of constant expressions. The Rust compiler is smart enough to combine repetitive code into single instructions. For example, the following code increments the current cell 7 times, 7 brainfuck instructions, 7 lines of Rust.
 
 ```rust
 frick!(+++++++);
@@ -486,7 +486,7 @@ But when we look at the corresponding asm in Godbolt for these instructions:
 mov     byte ptr [rsp], 7
 ```
 
-We see that we stored 7 in the cell with a single instruction. In brainfrick-rs, we performed such optimizations by hand, but here we get optimization for free alongside any others that the compiler pipeline performs on Rust code.
+We see that we stored 7 in the cell with a single `mov`. In brainfrick-rs, we performed such optimizations by hand, but here we get optimization for free alongside any others that the compiler pipeline performs on Rust code.
 
 So without further ado, let's compile the entire Mandelbrot program in release mode and see how we do:
 
@@ -514,7 +514,7 @@ sys     0m0.000s
 ## But wait, there's more!
 Not bad, but I know what you must be thinking, I promised you we'd get to under a second, and don't you worry, because that's where we're headed.
 
-While Rust is heralded for it's performance and safety, we can squeeze even more juice out of our compiler by forgoing the safety aspect. Like other memory-safe languages, Rust provides automatic bounds checking on arrays. Unlike C, if you try to reach beyond the bounds of an array in Rust, you'll get a runtime panic, because the Rust compiler inserts instructions to ensure you're always indexing within the bounds of your array. Modern compilers and CPUs can make the impact of these checks nearly negligible, but if speed is the name of the game, we can forgo them all together. Maybe don't write any banking software with my brainfuck compiler.
+While Rust is heralded for it's performance and safety, we can squeeze even more juice out of our compiler by forgoing the safety aspect. Like other memory-safe languages, Rust provides automatic bounds checking on arrays. Unlike C, if you try to reach beyond the bounds of an array in Rust, you'll get a runtime panic, because the Rust compiler inserts instructions to ensure you're always accessing a valid index. Modern compilers and CPUs can make the impact of these checks nearly negligible, but if speed is the name of the game, we can forgo them all together. Maybe don't write any banking or aerospace software with my brainfuck compiler.
 
 We'll add 2 more macros just to make our code prettier, they make use of the `unsafe` array methods `get_unchecked` and `get_unchecked_mut`.
 
