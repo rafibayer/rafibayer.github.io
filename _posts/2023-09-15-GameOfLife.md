@@ -28,4 +28,4 @@ Play Conway's Game of Life in your browser! Rust compiled to WASM, using the mac
 [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) is a classic cellular automaton. This implementation is written in Rust, rendered using [Macroquad](https://github.com/not-fl3/macroquad), and made available in the browser via [WebAssembly](https://webassembly.org/). 
 
 # See the Code
-https://github.com/rafibayer/wasm-gol
+[github.com/rafibayer/wasm-gol](https://github.com/rafibayer/wasm-gol)
