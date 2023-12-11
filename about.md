@@ -4,9 +4,9 @@ title: About
 permalink: /about/
 ---
 
-Hi, I'm Rafi. I am a Software Engineer II with the Microsoft Azure Networking team. I work primarily on the performance and scalability of the networking control plane, reducing resource deployment times and increasing reliability for our customers. Prior to joining Microsoft, I graduated with a degree in Informatics from the University of Washington (go dawgs).
+Hi, I'm Rafi. I am a Senior Software Engineer with Okta, working on the platform networking team on in Auth0 product group. Previously I worked on the Microsoft Azure Networking team, primarily on the performance and scalability of the networking control plane. I graduated with a degree in Informatics from the University of Washington (go dawgs).
 
-This site is my personal blog, I mostly plan on covering side projects of mine in greater detail. 
+This site is my personal blog, I mostly cover side projects or write about topics I find interesting. 
 
 *Opinions expressed are my own and do not express the views or opinions of my employer.*
 
