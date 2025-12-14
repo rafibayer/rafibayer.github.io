@@ -1,0 +1,12 @@
+---
+layout: none
+---
+
+<!DOCTYPE html>
+<script src="{{ site.baseurl }}/assets/javascript/wasm_exec.js"></script>
+<script>
+const go = new Go();
+WebAssembly.instantiateStreaming(fetch("{{ site.baseurl }}/assets/wasm/ants_again.wasm"), go.importObject).then(result => {
+    go.run(result.instance);
+});
+</script>
