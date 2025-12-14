@@ -5,6 +5,12 @@ permalink: /stuff/
 ---
 
 ## Spotlighted Projects
+
+### [Web Assembly Ant Pheromone Simulation](https://github.com/rafibayer/ants-again)
+[Try it in the browser!]({% post_url 2025-12-13-Ants %})
+
+![Ants]({{ site.baseurl }}/images/stuff/ants.png){: width="60%"}
+
 ### [Web Assembly Game Of Life](https://github.com/rafibayer/wasm-gol)
 [Try it in the browser!]({% post_url 2023-09-15-GameOfLife %})
 
