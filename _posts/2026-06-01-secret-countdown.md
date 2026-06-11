@@ -370,6 +370,55 @@ hidden: true
     width: 4.3rem;
   }
 
+  .daily-photo {
+    display: grid;
+    gap: 0.8rem;
+    justify-items: center;
+    margin: 4rem auto 2rem;
+    max-width: 44rem;
+    text-align: center;
+  }
+
+  .daily-photo[hidden] {
+    display: none;
+  }
+
+  .daily-photo__title {
+    color: #fdf6e3;
+    font-size: clamp(1.5rem, 5vw, 2.25rem);
+    margin: 0;
+  }
+
+  .daily-photo__frame {
+    align-items: center;
+    background: linear-gradient(145deg, rgba(253, 246, 227, 0.14), rgba(38, 139, 210, 0.08));
+    border: 1px solid rgba(253, 246, 227, 0.28);
+    border-radius: 22px;
+    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.32);
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0.55rem;
+    width: 100%;
+  }
+
+  .daily-photo__image {
+    border-radius: 15px;
+    display: block;
+    height: auto;
+    max-height: min(70vh, 38rem);
+    max-width: 100%;
+    width: auto;
+  }
+
+  .daily-photo__caption {
+    color: #9fb0b7;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0;
+  }
+
   @keyframes countdown-spin {
     to {
       transform: rotate(360deg);
@@ -541,9 +590,18 @@ hidden: true
   <div class="magic-trick__explosion" aria-hidden="true"></div>
 </section>
 
+<section class="daily-photo" aria-labelledby="daily-photo-title" hidden>
+  <h2 id="daily-photo-title" class="daily-photo__title">Photo Of The Day</h2>
+  <div class="daily-photo__frame">
+    <img class="daily-photo__image" alt="Today's countdown photo">
+  </div>
+  <p class="daily-photo__caption" aria-live="polite"></p>
+</section>
+
 <script>
   (function () {
     var targetTime = new Date("2026-06-25T09:26:00-07:00").getTime();
+    var galleryStartingDay = 14;
     var dayMs = 24 * 60 * 60 * 1000;
     var hourMs = 60 * 60 * 1000;
     var minuteMs = 60 * 1000;
@@ -561,10 +619,39 @@ hidden: true
     var secondsEl = document.getElementById("countdown-seconds");
     var timeEl = document.querySelector(".secret-countdown__time");
     var completeEl = document.getElementById("countdown-complete");
+    var dailyPhotoEl = document.querySelector(".daily-photo");
+    var dailyPhotoImageEl = dailyPhotoEl.querySelector(".daily-photo__image");
+    var dailyPhotoCaptionEl = dailyPhotoEl.querySelector(".daily-photo__caption");
+    var displayedPhotoDay = null;
 
     function pad(value) {
       return String(value).padStart(2, "0");
     }
+
+    function updateDailyPhoto(days) {
+      if (days < 1 || days > galleryStartingDay) {
+        dailyPhotoEl.hidden = true;
+        return;
+      }
+
+      if (displayedPhotoDay === days) {
+        return;
+      }
+
+      displayedPhotoDay = days;
+      var photoNumber = galleryStartingDay - days + 1;
+      dailyPhotoImageEl.src = "{{ site.baseurl }}/images/countdown/" + pad(photoNumber) + ".jpg";
+      dailyPhotoImageEl.alt = "Countdown photo for " + days + (days === 1 ? " day" : " days") + " remaining";
+      dailyPhotoCaptionEl.textContent = days + (days === 1 ? " day remains" : " days remain");
+    }
+
+    dailyPhotoImageEl.addEventListener("load", function () {
+      dailyPhotoEl.hidden = false;
+    });
+
+    dailyPhotoImageEl.addEventListener("error", function () {
+      dailyPhotoEl.hidden = true;
+    });
 
     function updateCountdown() {
       var remaining = targetTime - Date.now();
@@ -572,6 +659,7 @@ hidden: true
       if (remaining <= 0) {
         timeEl.style.display = "none";
         completeEl.style.display = "block";
+        updateDailyPhoto(0);
         return false;
       }
 
@@ -590,6 +678,7 @@ hidden: true
       hoursEl.textContent = pad(hours);
       minutesEl.textContent = pad(minutes);
       secondsEl.textContent = pad(seconds);
+      updateDailyPhoto(days);
       return true;
     }
 
@@ -615,6 +704,7 @@ hidden: true
         spinCountdown();
       }
     });
+
   })();
 </script>
 
