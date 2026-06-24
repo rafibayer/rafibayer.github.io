@@ -629,20 +629,22 @@ hidden: true
     }
 
     function updateDailyPhoto(days) {
-      if (days < 1 || days > galleryStartingDay) {
+      if (days > galleryStartingDay) {
         dailyPhotoEl.hidden = true;
         return;
       }
 
-      if (displayedPhotoDay === days) {
+      var photoDay = Math.max(1, days);
+
+      if (displayedPhotoDay === photoDay) {
         return;
       }
 
-      displayedPhotoDay = days;
-      var photoNumber = galleryStartingDay - days + 1;
+      displayedPhotoDay = photoDay;
+      var photoNumber = galleryStartingDay - photoDay + 1;
       dailyPhotoImageEl.src = "{{ site.baseurl }}/images/countdown/" + pad(photoNumber) + ".jpg";
-      dailyPhotoImageEl.alt = "Countdown photo for " + days + (days === 1 ? " day" : " days") + " remaining";
-      dailyPhotoCaptionEl.textContent = days + (days === 1 ? " day remains" : " days remain");
+      dailyPhotoImageEl.alt = "Countdown photo for " + photoDay + (photoDay === 1 ? " day" : " days") + " remaining";
+      dailyPhotoCaptionEl.textContent = photoDay + (photoDay === 1 ? " day remains" : " days remain");
     }
 
     dailyPhotoImageEl.addEventListener("load", function () {
