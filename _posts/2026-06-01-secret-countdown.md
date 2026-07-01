@@ -600,7 +600,7 @@ hidden: true
 
 <script>
   (function () {
-    var targetTime = new Date("2026-07-25T12:10:00-04:00").getTime();
+    var targetTime = new Date("2026-07-25T00:10:00-04:00").getTime();
     var galleryStartingDay = 14;
     var dayMs = 24 * 60 * 60 * 1000;
     var hourMs = 60 * 60 * 1000;
