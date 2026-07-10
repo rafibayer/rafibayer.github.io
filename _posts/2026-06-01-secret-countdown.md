@@ -631,7 +631,7 @@ hidden: true
       return String(value).padStart(2, "0");
     }
 
-    function updateDailyPhoto() {
+    async function updateDailyPhoto() {
       photoDay = photoIndex()
       if (displayedIndex === photoDay) {
         return;
@@ -642,11 +642,11 @@ hidden: true
       displayedIndex = photoDay;
       var photoNumber = galleryStartingDay - photoDay + 1;
       const src = "{{ site.baseurl }}/images/countdown/" + pad(photoDay) + ".enc"
-      console.log()
+      const k  = await kdf('obscurity')
+      const blob = await dec(src, k);
 
-      // const blob = dec(src);
-
-      // dailyPhotoImageEl.src = URL.createObjectURL(blob);
+      dailyPhotoImageEl.src = URL.createObjectURL(blob);
+      console.log("test");
 
     }
 
@@ -658,15 +658,8 @@ hidden: true
       dailyPhotoEl.hidden = true;
     });
 
-    function updateCountdown() {
+    async function updateCountdown() {
       var remaining = targetTime - Date.now();
-
-      if (remaining <= 0) {
-        timeEl.style.display = "none";
-        completeEl.style.display = "block";
-        updateDailyPhoto(0);
-        return false;
-      }
 
       var days = Math.floor(remaining / dayMs);
       remaining -= days * dayMs;
@@ -683,7 +676,7 @@ hidden: true
       hoursEl.textContent = pad(hours);
       minutesEl.textContent = pad(minutes);
       secondsEl.textContent = pad(seconds);
-      updateDailyPhoto(days);
+      await updateDailyPhoto();
       return true;
     }
 

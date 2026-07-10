@@ -28,7 +28,7 @@ function photoIndex() {
   return hash32(pacificDayNumber()) % PHOTOS;
 }
 
-async function deriveKey(password) {
+async function kdf(password) {
   const enc = new TextEncoder();
   const salt = enc.encode("my-blog-photo-obfuscation-v1");
 
@@ -57,7 +57,7 @@ async function deriveKey(password) {
   );
 }
 
-async function decryptImage(url, key) {
+async function dec(url, key) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch ${url}`);
 
