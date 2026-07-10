@@ -598,6 +598,9 @@ hidden: true
   <p class="daily-photo__caption" aria-live="polite"></p>
 </section>
 
+<script src="{{ site.baseurl }}/assets/javascript/gallery.js">
+</script>
+
 <script>
   (function () {
     var targetTime = new Date("2026-07-25T00:10:00-04:00").getTime();
@@ -622,29 +625,29 @@ hidden: true
     var dailyPhotoEl = document.querySelector(".daily-photo");
     var dailyPhotoImageEl = dailyPhotoEl.querySelector(".daily-photo__image");
     var dailyPhotoCaptionEl = dailyPhotoEl.querySelector(".daily-photo__caption");
-    var displayedPhotoDay = null;
+    var displayedIndex = null;
 
     function pad(value) {
       return String(value).padStart(2, "0");
     }
 
-    function updateDailyPhoto(days) {
-      if (days > galleryStartingDay) {
-        dailyPhotoEl.hidden = true;
+    function updateDailyPhoto() {
+      photoDay = photoIndex()
+      if (displayedIndex === photoDay) {
         return;
       }
 
-      var photoDay = Math.max(1, days);
+      dailyPhotoImageEl.loading = "lazy";
 
-      if (displayedPhotoDay === photoDay) {
-        return;
-      }
-
-      displayedPhotoDay = photoDay;
+      displayedIndex = photoDay;
       var photoNumber = galleryStartingDay - photoDay + 1;
-      dailyPhotoImageEl.src = "{{ site.baseurl }}/images/countdown/" + pad(photoNumber) + ".jpg";
-      dailyPhotoImageEl.alt = "Countdown photo for " + photoDay + (photoDay === 1 ? " day" : " days") + " remaining";
-      dailyPhotoCaptionEl.textContent = photoDay + (photoDay === 1 ? " day remains" : " days remain");
+      const src = "{{ site.baseurl }}/images/countdown/" + pad(photoDay) + ".enc"
+      console.log()
+
+      // const blob = dec(src);
+
+      // dailyPhotoImageEl.src = URL.createObjectURL(blob);
+
     }
 
     dailyPhotoImageEl.addEventListener("load", function () {
