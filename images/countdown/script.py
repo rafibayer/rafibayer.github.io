@@ -9,10 +9,13 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 from PIL import Image, UnidentifiedImageError
+from pillow_heif import register_heif_opener
+
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 
+register_heif_opener()
 
 COMMON_IMAGE_EXTS = {
     ".jpg",
@@ -24,6 +27,7 @@ COMMON_IMAGE_EXTS = {
     ".tif",
     ".tiff",
     ".avif",
+    ".heic",
 }
 
 
@@ -93,7 +97,7 @@ def encrypt_bytes(plaintext: bytes, key: bytes) -> bytes:
 
 def process_image(path: Path, key: bytes, quality: int, dry_run: bool) -> None:
     output_path = path.with_suffix(".enc")
-    
+
     if output_path.exists():
         raise FileExistsError(f"Refusing to overwrite existing file: {output_path}")
 
