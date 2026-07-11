@@ -238,13 +238,12 @@ hidden: true
     }
 
     async function updateDailyPhoto() {
-      photoDay = photoIndex()
+      var photoDay = photoIndex()
       if (displayedIndex === photoDay) {
         return;
       }
 
       displayedIndex = photoDay;
-      var photoNumber = galleryStartingDay - photoDay + 1;
       const src = "{{ site.baseurl }}/images/countdown/" + pad(photoDay) + ".enc"
       const k  = await kdf('obscurity')
       const blob = await dec(src, k);
