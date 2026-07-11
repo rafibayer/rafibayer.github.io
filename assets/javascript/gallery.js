@@ -1,4 +1,4 @@
-const PHOTOS = 14;
+const PHOTOS = 21;
 const K = "obscurity";
 
 function hash32(x) {
