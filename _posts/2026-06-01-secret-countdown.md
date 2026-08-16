@@ -171,7 +171,7 @@ hidden: true
 
 <section class="secret-countdown" aria-labelledby="secret-countdown-title">
   <p id="secret-countdown-title" class="secret-countdown__label">
-    Time remaining until July 25, 2026 at 12:10 AM Eastern time
+    Time remaining until August 22, 2026 at 09:25 AM Pacific time
   </p>
 
   <div class="secret-countdown__time" aria-live="polite" role="button" tabindex="0">
@@ -209,7 +209,7 @@ hidden: true
 
 <script>
   (function () {
-    var targetTime = new Date("2026-07-25T00:10:00-04:00").getTime();
+    var targetTime = new Date("2026-08-22T09:25:00-08:00").getTime();
     var galleryStartingDay = 14;
     var dayMs = 24 * 60 * 60 * 1000;
     var hourMs = 60 * 60 * 1000;
