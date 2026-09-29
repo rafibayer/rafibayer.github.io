@@ -209,7 +209,7 @@ hidden: true
 
 <script>
   (function () {
-    var targetTime = new Date("2026-10-04T01:43:00-04:00").getTime();
+    var targetTime = new Date("2026-10-04T13:43:00-04:00").getTime();
     var dayMs = 24 * 60 * 60 * 1000;
     var hourMs = 60 * 60 * 1000;
     var minuteMs = 60 * 1000;
