@@ -171,7 +171,7 @@ hidden: true
 
 <section class="secret-countdown" aria-labelledby="secret-countdown-title">
   <p id="secret-countdown-title" class="secret-countdown__label">
-    Time remaining until October 4, 2026 at 01:43 PM Eastern time
+    Time remaining until November 14, 2026 at 10:37 AM Pacific time
   </p>
 
   <div class="secret-countdown__time" aria-live="polite" role="button" tabindex="0">
@@ -209,7 +209,7 @@ hidden: true
 
 <script>
   (function () {
-    var targetTime = new Date("2026-10-04T13:43:00-04:00").getTime();
+    var targetTime = new Date("2026-11-14T10:37:00-08:00").getTime();
     var dayMs = 24 * 60 * 60 * 1000;
     var hourMs = 60 * 60 * 1000;
     var minuteMs = 60 * 1000;
