@@ -57,3 +57,7 @@ exclude:
   - LICENSE
   - README.md
   - CNAME
+  - script
+  - test
+  - docs
+  - .ai-pricing-tmp

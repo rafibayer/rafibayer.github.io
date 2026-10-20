@@ -1,0 +1,493 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-20T21:42:43.336Z",
+  "currency": "USD",
+  "sources": {
+    "openai": {
+      "label": "OpenAI API pricing",
+      "url": "https://developers.openai.com/api/docs/pricing",
+      "updatedAt": "2026-10-20T21:42:43.336Z",
+      "checkedAt": "2026-10-20T21:42:43.336Z",
+      "status": "ok"
+    },
+    "chatgpt": {
+      "label": "ChatGPT / Codex plans",
+      "url": "https://learn.chatgpt.com/docs/pricing",
+      "updatedAt": "2026-10-20T21:42:43.336Z",
+      "checkedAt": "2026-10-20T21:42:43.336Z",
+      "status": "ok"
+    },
+    "router": {
+      "label": "OpenRouter model catalog & context limits",
+      "url": "https://openrouter.ai/api/v1/models",
+      "updatedAt": "2026-10-20T21:42:43.336Z",
+      "checkedAt": "2026-10-20T21:42:43.336Z",
+      "status": "ok"
+    },
+    "deepseek": {
+      "label": "DeepSeek API pricing (peak rates)",
+      "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "updatedAt": "2026-10-20T21:42:43.336Z",
+      "checkedAt": "2026-10-20T21:42:43.336Z",
+      "status": "ok"
+    },
+    "claude": {
+      "label": "Claude Pro pricing",
+      "url": "https://claude.com/pricing",
+      "updatedAt": "2026-10-20T21:42:43.336Z",
+      "checkedAt": "2026-10-20T21:42:43.336Z",
+      "status": "ok"
+    },
+    "credits": {
+      "label": "Claude Max API credits",
+      "url": "https://platform.claude.com/docs/en/about-claude/api-credits-for-subscribers",
+      "updatedAt": "2026-10-20T21:42:43.336Z",
+      "checkedAt": "2026-10-20T21:42:43.336Z",
+      "status": "ok"
+    },
+    "fees": {
+      "label": "OpenRouter Standard credit purchase fee",
+      "url": "https://openrouter.ai/pricing",
+      "updatedAt": "2026-10-20T21:42:43.336Z",
+      "checkedAt": "2026-10-20T21:42:43.336Z",
+      "status": "ok"
+    },
+    "anthropic": {
+      "label": "Anthropic API pricing",
+      "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "updatedAt": "2026-10-20T21:42:43.336Z",
+      "checkedAt": "2026-10-20T21:42:43.336Z",
+      "status": "ok"
+    },
+    "max": {
+      "label": "Claude Max pricing",
+      "url": "https://support.claude.com/en/articles/11049741-what-is-the-max-plan",
+      "updatedAt": "2026-10-20T21:42:43.336Z",
+      "checkedAt": "2026-10-20T21:42:43.336Z",
+      "status": "ok"
+    }
+  },
+  "routerFee": {
+    "percent": 0.055
+  },
+  "plans": [
+    {
+      "id": "chatgpt-plus",
+      "name": "ChatGPT Plus",
+      "family": "openai",
+      "monthly": 20,
+      "capacity": 24,
+      "source": "chatgpt"
+    },
+    {
+      "id": "chatgpt-pro-100",
+      "name": "ChatGPT Pro 100",
+      "family": "openai",
+      "monthly": 100,
+      "capacity": 120,
+      "source": "chatgpt"
+    },
+    {
+      "id": "chatgpt-pro-200",
+      "name": "ChatGPT Pro 200",
+      "family": "openai",
+      "monthly": 200,
+      "capacity": 480,
+      "source": "chatgpt"
+    },
+    {
+      "id": "chatgpt-pro-500",
+      "name": "ChatGPT Pro 500",
+      "family": "openai",
+      "monthly": 500,
+      "capacity": 1200,
+      "source": "chatgpt"
+    },
+    {
+      "id": "claude-pro",
+      "name": "Claude Pro",
+      "family": "anthropic",
+      "monthly": 20,
+      "capacity": 24,
+      "source": "claude"
+    },
+    {
+      "id": "claude-max-5",
+      "name": "Claude Max 5x",
+      "family": "anthropic",
+      "monthly": 100,
+      "capacity": 120,
+      "source": "max",
+      "apiCredit": 100
+    },
+    {
+      "id": "claude-max-20",
+      "name": "Claude Max 20x",
+      "family": "anthropic",
+      "monthly": 200,
+      "capacity": 480,
+      "source": "max",
+      "apiCredit": 200
+    }
+  ],
+  "models": [
+    {
+      "id": "gpt-6-luna",
+      "name": "GPT-6 Luna",
+      "family": "openai",
+      "tiers": [
+        0
+      ],
+      "routerId": "openai/gpt-6-luna",
+      "source": "openai",
+      "context": 1050000,
+      "maxOutput": 128000,
+      "direct": {
+        "rates": {
+          "input": 0.1,
+          "output": 0.5,
+          "cached": 0.01,
+          "write": 0.125
+        },
+        "overrides": [
+          {
+            "above": 272000,
+            "input": 0.2,
+            "output": 0.75,
+            "cached": 0.02,
+            "write": 0.25
+          }
+        ]
+      },
+      "router": {
+        "rates": {
+          "input": 0.09999999999999999,
+          "output": 0.5,
+          "cached": 0.01,
+          "write": 0.125
+        },
+        "overrides": [
+          {
+            "above": 272000,
+            "input": 0.19999999999999998,
+            "output": 0.75,
+            "cached": 0.02,
+            "write": 0.25
+          }
+        ]
+      }
+    },
+    {
+      "id": "gpt-6.1-sol",
+      "name": "GPT-6.1 Sol",
+      "family": "openai",
+      "tiers": [
+        1
+      ],
+      "routerId": "openai/gpt-6.1-sol",
+      "source": "openai",
+      "context": 1050000,
+      "maxOutput": 128000,
+      "direct": {
+        "rates": {
+          "input": 2,
+          "output": 10,
+          "cached": 0.1,
+          "write": 2.5
+        },
+        "overrides": [
+          {
+            "above": 272000,
+            "input": 4,
+            "output": 15,
+            "cached": 0.2,
+            "write": 5
+          }
+        ]
+      },
+      "router": {
+        "rates": {
+          "input": 2,
+          "output": 10,
+          "cached": 0.09999999999999999,
+          "write": 2.5
+        },
+        "overrides": [
+          {
+            "above": 272000,
+            "input": 4,
+            "output": 15,
+            "cached": 0.19999999999999998,
+            "write": 5
+          }
+        ]
+      }
+    },
+    {
+      "id": "gpt-6-astra",
+      "name": "GPT-6 Astra",
+      "family": "openai",
+      "tiers": [
+        2
+      ],
+      "routerId": "openai/gpt-6-astra",
+      "source": "openai",
+      "context": 1050000,
+      "maxOutput": 128000,
+      "direct": {
+        "rates": {
+          "input": 10,
+          "output": 50,
+          "cached": 1,
+          "write": 12.5
+        },
+        "overrides": [
+          {
+            "above": 272000,
+            "input": 20,
+            "output": 75,
+            "cached": 2,
+            "write": 25
+          }
+        ]
+      },
+      "router": {
+        "rates": {
+          "input": 10,
+          "output": 50,
+          "cached": 1,
+          "write": 12.5
+        },
+        "overrides": [
+          {
+            "above": 272000,
+            "input": 20,
+            "output": 75,
+            "cached": 2,
+            "write": 25
+          }
+        ]
+      }
+    },
+    {
+      "id": "claude-haiku-5.5",
+      "name": "Claude Haiku 5.5",
+      "family": "anthropic",
+      "tiers": [
+        0
+      ],
+      "routerId": "anthropic/claude-haiku-5.5",
+      "source": "anthropic",
+      "context": 1000000,
+      "maxOutput": 128000,
+      "direct": {
+        "rates": {
+          "input": 0.1,
+          "output": 0.5,
+          "cached": 0.01,
+          "write": 0.125
+        },
+        "overrides": [
+          {
+            "above": 100000,
+            "input": 0.5,
+            "output": 2.5,
+            "cached": 0.05,
+            "write": 0.625
+          }
+        ]
+      },
+      "router": {
+        "rates": {
+          "input": 0.09999999999999999,
+          "output": 0.5,
+          "cached": 0.01,
+          "write": 0.125
+        },
+        "overrides": [
+          {
+            "above": 100000,
+            "input": 0.5,
+            "output": 2.5,
+            "cached": 0.049999999999999996,
+            "write": 0.625
+          }
+        ]
+      }
+    },
+    {
+      "id": "claude-sonnet-5.5",
+      "name": "Claude Sonnet 5.5",
+      "family": "anthropic",
+      "tiers": [
+        1
+      ],
+      "routerId": "anthropic/claude-sonnet-5.5",
+      "source": "anthropic",
+      "context": 1000000,
+      "maxOutput": 128000,
+      "direct": {
+        "rates": {
+          "input": 2,
+          "output": 10,
+          "cached": 0.1,
+          "write": 2.5
+        },
+        "overrides": []
+      },
+      "router": {
+        "rates": {
+          "input": 2,
+          "output": 10,
+          "cached": 0.09999999999999999,
+          "write": 2.5
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": "claude-opus-5.5",
+      "name": "Claude Opus 5.5",
+      "family": "anthropic",
+      "tiers": [
+        2
+      ],
+      "routerId": "anthropic/claude-opus-5.5",
+      "source": "anthropic",
+      "context": 1000000,
+      "maxOutput": 128000,
+      "direct": {
+        "rates": {
+          "input": 4,
+          "output": 20,
+          "cached": 0.2,
+          "write": 5
+        },
+        "overrides": []
+      },
+      "router": {
+        "rates": {
+          "input": 4,
+          "output": 20,
+          "cached": 0.19999999999999998,
+          "write": 5
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": "deepseek-flash",
+      "name": "DeepSeek Flash",
+      "family": "deepseek",
+      "tiers": [
+        0
+      ],
+      "routerId": "deepseek/deepseek-v4.1-flash",
+      "source": "deepseek",
+      "context": 1048576,
+      "maxOutput": 943718,
+      "direct": {
+        "rates": {
+          "input": 0.3,
+          "output": 1.2,
+          "cached": 0.006,
+          "write": 0.3
+        },
+        "overrides": []
+      },
+      "router": {
+        "rates": {
+          "input": 0.02832,
+          "output": 0.12,
+          "cached": 0.000566,
+          "write": 0.02832
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": "deepseek-v4-pro",
+      "name": "DeepSeek V4 Pro",
+      "family": "deepseek",
+      "tiers": [
+        1,
+        2
+      ],
+      "routerId": "deepseek/deepseek-v4-pro",
+      "source": "deepseek",
+      "context": 1048576,
+      "maxOutput": 384000,
+      "direct": {
+        "rates": {
+          "input": 1.32,
+          "output": 3.96,
+          "cached": 0.044,
+          "write": 1.32
+        },
+        "overrides": []
+      },
+      "router": {
+        "rates": {
+          "input": 0.35148,
+          "output": 0.70296,
+          "cached": 0.02929,
+          "write": 0.35148
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": "gemini-3.5-flash",
+      "name": "Gemini 3.5 Flash",
+      "family": "google",
+      "tiers": [
+        0,
+        1
+      ],
+      "routerId": "google/gemini-3.5-flash",
+      "source": null,
+      "context": 1048576,
+      "maxOutput": 65536,
+      "direct": null,
+      "router": {
+        "rates": {
+          "input": 1.5,
+          "output": 9,
+          "cached": 0.15,
+          "write": 0.0833333333333333
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": "gemini-3.1-pro-preview",
+      "name": "Gemini 3.1 Pro Preview",
+      "family": "google",
+      "tiers": [
+        2
+      ],
+      "routerId": "google/gemini-3.1-pro-preview",
+      "source": null,
+      "context": 1048576,
+      "maxOutput": 65536,
+      "direct": null,
+      "router": {
+        "rates": {
+          "input": 2,
+          "output": 12,
+          "cached": 0.19999999999999998,
+          "write": 0.375
+        },
+        "overrides": [
+          {
+            "above": 200000,
+            "input": 4,
+            "output": 18,
+            "cached": 0.39999999999999997,
+            "write": 0.375
+          }
+        ]
+      }
+    }
+  ]
+}

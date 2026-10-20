@@ -1,0 +1,69 @@
+name: Refresh AI pricing and publish blog
+
+on:
+  schedule:
+    - cron: '23 13 * * *'
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore last validated pricing snapshot
+        uses: actions/cache/restore@v4
+        with:
+          path: _data/ai_pricing.json
+          key: ai-pricing-${{ hashFiles('script/refresh-ai-pricing.mjs') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ai-pricing-${{ hashFiles('script/refresh-ai-pricing.mjs') }}-
+      - name: Refresh public pricing snapshot
+        run: node script/refresh-ai-pricing.mjs
+      - name: Check calculation and refresh behavior
+        run: node --test test/ai-cost.test.cjs test/ai-pricing-refresh.test.mjs
+      - name: Retain validated snapshot for the next refresh
+        uses: actions/cache/save@v4
+        with:
+          path: _data/ai_pricing.json
+          key: ai-pricing-${{ hashFiles('script/refresh-ai-pricing.mjs') }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - uses: actions/configure-pages@v5
+      - uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+      - name: Verify built calculator and unlisted-post rules
+        run: node script/verify-ai-post.mjs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy refreshed static blog
+        id: deployment
+        uses: actions/deploy-pages@v4
